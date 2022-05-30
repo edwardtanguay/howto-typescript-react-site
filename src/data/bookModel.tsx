@@ -5,7 +5,7 @@ export const getBooks = (rawBooks: any[]) => {
 	rawBooks.forEach((rawBook: any) => {
 		const book: IBook = {
 			title: rawBook.title,
-			author: rawBook.authors.length > 0 ? rawBook.authors[0] : '(unknown)'
+			author: rawBook.authors.length > 0 ? rawBook.authors[0].name : '(unknown)'
 		}
 		books.push(book);
 	});

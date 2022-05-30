@@ -1,46 +1,41 @@
-import { useState } from 'react';
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { IBook } from './data/interfaces';
+import { getBooks } from './data/bookModel'; 
 import './App.scss';
 
+const url = 'https://gutendex.com/books/?search=paris';
+
 function App() {
-	const [count, setCount] = useState(0);
+	const [books, setBooks] = useState<IBook[]>([]);
 
-	enum PersonStatus {
-		Customer,
-		Employee,
-		Unknown,
-	}
 
-	interface IPerson {
-		firstName: string;
-		lastName: string;
-		age: number;
-		isMember: boolean;
-		scores: number[];
-		accessGroups: string[];
-		status: PersonStatus;
-	}
 
-	const person: IPerson = {
-		firstName: 'Harald',
-		lastName: 'Deckner',
-		age: 34,
-		isMember: true,
-		scores: [95, 80, 85],
-		accessGroups: ['admins'],
-		status: PersonStatus.Employee,
-	};
+
+
+
+	useEffect(() => {
+		(async () => {
+			const rawBooks = (await axios.get(url)).data.results;
+			const _books: IBook[] = getBooks(rawBooks);
+			setBooks(_books);
+		})();
+	}, []);
 
 	return (
 		<div className="App">
-			<p>
-				The person {person.firstName} {person.lastName} has the
-				following scores {person.scores.join(', ')}.
-			</p>
-			{person.status === PersonStatus.Employee && (
+			{books.length === 0 ? (
+				<div>Loading...</div>
+			) : (
 				<>
-					<p>Status is: {person.status}</p>
-					<p>Status is: {PersonStatus[person.status]}</p>
+					<h2>There are {books.length} books:</h2>
+					<ul>
+						{books.map((book, index) => {
+							return (
+								<li key={index}>{book.title} by {book.author}</li>
+							) 
+						})}
+					</ul>
 				</>
 			)}
 		</div>
